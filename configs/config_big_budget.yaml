@@ -1,0 +1,109 @@
+hf_user: AmareshHebbar
+base_model: Qwen/Qwen2.5-1.5B-Instruct
+base_label: Qwen2.5 1.5B Instruct
+repo_prefix: ToolSure_Qwen2.5_1.5B
+dataset_name: ToolSure_Calls_Qwen2.5_1.5B
+private: false
+seed: 42
+gpu_cost_per_hour: 1.0
+
+collection:
+  title: ToolSure
+  description: Qwen2.5 1.5B models that never break a function call. Five training methods plus constrained decoding, one table.
+
+paths:
+  work: /workspace/toolsure_runs_big
+
+gen:
+  max_model_len: 6144
+  gpu_memory_utilization: 0.85
+
+data:
+  xlam_eval_n: 500
+  xlam_train_n: 40000
+  glaive_call_n: 8000
+  glaive_nocall_n: 6000
+  pairs_n: 12000
+  onpolicy_negatives: true
+  onpolicy_temperature: 0.8
+  max_prompt_tokens: 3072
+
+eval:
+  quick_n: 40
+  max_tokens: 768
+  latency_n: 20
+  reference_model: Qwen/Qwen2.5-7B-Instruct
+  mmlu: true
+  mmlu_max_model_len: 4096
+  gate_overall_drop: 0.08
+  gate_parse_rate: 0.90
+
+lora:
+  r: 64
+  alpha: 128
+  dropout: 0.0
+
+train:
+  sft:
+    init: base
+    mode: lora
+    lr: 1.0e-4
+    epochs: 2
+    micro_batch: 4
+    grad_accum: 8
+    warmup_ratio: 0.03
+    max_len: 3584
+    logits_chunk: 1024
+    max_examples: 0
+  qlora:
+    init: base
+    mode: qlora
+    lr: 2.0e-4
+    epochs: 2
+    micro_batch: 4
+    grad_accum: 8
+    warmup_ratio: 0.03
+    max_len: 3584
+    logits_chunk: 1024
+    max_examples: 0
+  dora:
+    init: base
+    mode: dora
+    lr: 1.0e-4
+    epochs: 2
+    micro_batch: 4
+    grad_accum: 8
+    warmup_ratio: 0.03
+    max_len: 3584
+    logits_chunk: 1024
+    max_examples: 0
+  orpo:
+    init: base
+    mode: lora
+    lr: 5.0e-5
+    epochs: 1
+    micro_batch: 2
+    grad_accum: 8
+    warmup_ratio: 0.05
+    max_len: 3584
+    logits_chunk: 1024
+    lam: 0.1
+    max_examples: 0
+  grpo:
+    init: sft
+    lr: 1.0e-5
+    max_steps: 400
+    num_generations: 8
+    per_device_batch: 8
+    grad_accum: 8
+    warmup_ratio: 0.05
+    max_prompt_length: 1536
+    max_completion_length: 384
+    vllm_gpu_memory_utilization: 0.3
+    beta: 0.0
+    temperature: 0.9
+    top_p: 1.0
+    max_prompts: 0
+
+constrained:
+  source: null

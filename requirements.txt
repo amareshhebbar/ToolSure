@@ -1,0 +1,15 @@
+vllm==0.10.0
+trl==0.21.0
+transformers==4.55.4
+peft==0.17.1
+accelerate==1.10.1
+datasets==3.6.0
+huggingface_hub[hf_transfer]==0.34.4
+lm_eval==0.4.9.1
+bitsandbytes==0.47.0
+safetensors
+pyyaml
+pandas
+pyarrow
+matplotlib
+python_dotenv

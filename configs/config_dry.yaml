@@ -1,0 +1,102 @@
+hf_user: AmareshHebbar
+base_model: Qwen/Qwen2.5-1.5B-Instruct
+base_label: Qwen2.5 1.5B Instruct
+repo_prefix: ToolSureDRY_Qwen2.5_1.5B
+dataset_name: ToolSureDRY_Calls_Qwen2.5_1.5B
+private: true
+seed: 42
+gpu_cost_per_hour: 1.0
+collection:
+  title: ToolSure dry run
+  description: Throwaway dry run of the ToolSure pipeline. Safe to delete.
+paths:
+  work: /workspace/toolsure_dry
+gen:
+  max_model_len: 6144
+  gpu_memory_utilization: 0.85
+data:
+  xlam_eval_n: 100
+  xlam_train_n: 300
+  glaive_call_n: 100
+  glaive_nocall_n: 100
+  pairs_n: 150
+  onpolicy_negatives: true
+  onpolicy_temperature: 0.8
+  max_prompt_tokens: 3072
+eval:
+  quick_n: 10
+  max_tokens: 768
+  latency_n: 2
+  reference_model: null
+  mmlu: false
+  mmlu_max_model_len: 4096
+  gate_overall_drop: 0.3
+  gate_parse_rate: 0.5
+  full_n: 30
+lora:
+  r: 64
+  alpha: 128
+  dropout: 0.0
+train:
+  sft:
+    init: base
+    mode: lora
+    lr: 0.0001
+    epochs: 1
+    micro_batch: 4
+    grad_accum: 8
+    warmup_ratio: 0.03
+    max_len: 3072
+    logits_chunk: 1024
+    max_examples: 64
+  qlora:
+    init: base
+    mode: qlora
+    lr: 0.0002
+    epochs: 1
+    micro_batch: 4
+    grad_accum: 8
+    warmup_ratio: 0.03
+    max_len: 3072
+    logits_chunk: 1024
+    max_examples: 64
+  dora:
+    init: base
+    mode: dora
+    lr: 0.0001
+    epochs: 1
+    micro_batch: 4
+    grad_accum: 8
+    warmup_ratio: 0.03
+    max_len: 3072
+    logits_chunk: 1024
+    max_examples: 64
+  orpo:
+    init: base
+    mode: lora
+    lr: 5.0e-05
+    epochs: 1
+    micro_batch: 2
+    grad_accum: 8
+    warmup_ratio: 0.05
+    max_len: 3072
+    logits_chunk: 1024
+    lam: 0.1
+    max_examples: 64
+  grpo:
+    init: sft
+    lr: 1.0e-05
+    max_steps: 3
+    num_generations: 8
+    per_device_batch: 4
+    grad_accum: 4
+    warmup_ratio: 0.05
+    max_prompt_length: 1536
+    max_completion_length: 384
+    vllm_gpu_memory_utilization: 0.3
+    beta: 0.0
+    temperature: 0.9
+    top_p: 1.0
+    max_prompts: 0
+constrained:
+  source: null

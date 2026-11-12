@@ -361,6 +361,8 @@ def eval_sets(cfg, mode):
     sets["xlam"] = xe
     if mode == "quick":
         sets = {k: subset(v, cfg["eval"]["quick_n"], cfg["seed"]) for k, v in sets.items()}
+    elif cfg["eval"].get("full_n"):
+        sets = {k: subset(v, cfg["eval"]["full_n"], cfg["seed"]) for k, v in sets.items()}
     return sets
 
 

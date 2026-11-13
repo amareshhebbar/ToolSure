@@ -248,21 +248,22 @@ def check_train(cfg):
     prompt = chat_prompt(tok, toy[0])
     good = target_text(toy[0]) + tok.eos_token
     bad = '<tool_call>\n{"name": "get_weather_info", "arguments": {"town": "Paris"}}\n</tool_call>' + tok.eos_token
+    memo = "The access code is zebra quantum lattice harbor violet nine." + tok.eos_token
     tc = {"logits_chunk": 256, "lam": 0.1}
     for mode in ["lora", "qlora", "dora"]:
         torch.cuda.reset_peak_memory_stats()
         model = build_model(cfg, cfg["base_model"], mode)
         opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=2e-4)
-        batch = collate([encode(tok, prompt, good)], pad)
+        batch = collate([encode(tok, prompt, memo)], pad)
         losses = []
-        for _ in range(4):
+        for _ in range(6):
             loss, _ = sft_loss(model, batch, tc)
             loss.backward()
             opt.step()
             opt.zero_grad()
             losses.append(loss.item())
         print(f"  {mode} sft losses {[round(x, 4) for x in losses]}, peak {torch.cuda.max_memory_allocated() / 2**30:.1f} GiB", flush=True)
-        if not losses[-1] < losses[0]:
+        if not (all(x == x for x in losses) and losses[-1] < losses[0] * 0.9):
             fail(f"{mode} SFT loss did not go down")
         ok(f"{mode} SFT steps")
         if mode == "lora":

@@ -31,11 +31,14 @@ def verify_model(cfg, name):
     local = wpath(cfg, "verify", name)
     if local.exists():
         shutil.rmtree(local)
-    snapshot_download(repo, local_dir=str(local), ignore_patterns=["adapter/*", "training/*", "assets/*", "eval/*"], force_download=True)
-    conf = AutoConfig.from_pretrained(str(local))
-    tok = AutoTokenizer.from_pretrained(str(local))
-    print(f"  model_type {conf.model_type}, eos {tok.eos_token}, vocab {len(tok)}", flush=True)
-    res = quick_eval(cfg, str(local), name, variant_for(name))
+    try:
+        snapshot_download(repo, local_dir=str(local), ignore_patterns=["adapter/*", "training/*", "assets/*", "eval/*"], force_download=True)
+        conf = AutoConfig.from_pretrained(str(local))
+        tok = AutoTokenizer.from_pretrained(str(local))
+        print(f"  model_type {conf.model_type}, eos {tok.eos_token}, vocab {len(tok)}", flush=True)
+        res = quick_eval(cfg, str(local), name, variant_for(name))
+    finally:
+        shutil.rmtree(local, ignore_errors=True)
     base = read_json(results_path(cfg, "base_prompted", "quick"))
     mine = res["summary"]
     gates = {"parse_rate": mine["parse_rate"] >= cfg["eval"]["gate_parse_rate"]}

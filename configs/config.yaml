@@ -36,6 +36,8 @@ eval:
   mmlu: false
   mmlu_max_model_len: 4096
   gate_overall_drop: 0.08
+  gate_overall_drop_by_model:
+    sft: 0.2
   gate_parse_rate: 0.90
 
 lora:

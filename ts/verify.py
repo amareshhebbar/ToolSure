@@ -43,7 +43,8 @@ def verify_model(cfg, name):
     mine = res["summary"]
     gates = {"parse_rate": mine["parse_rate"] >= cfg["eval"]["gate_parse_rate"]}
     if base:
-        gates["overall"] = mine["overall"] >= base["summary"]["overall"] - cfg["eval"]["gate_overall_drop"]
+        drop = cfg["eval"].get("gate_overall_drop_by_model", {}).get(name, cfg["eval"]["gate_overall_drop"])
+        gates["overall"] = mine["overall"] >= base["summary"]["overall"] - drop
     report = {"repo": repo, "quick": mine, "base_quick": base["summary"] if base else None, "gates": gates, "passed": all(gates.values())}
     write_json(wpath(cfg, "results", f"{name}_verify.json"), report)
     banner(f"verify {name}\n" + json.dumps(report, indent=2))

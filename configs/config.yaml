@@ -92,7 +92,7 @@ train:
     lam: 0.1
     max_examples: 0
   grpo:
-    init: sft
+    init: orpo
     lr: 1.0e-5
     max_steps: 80
     num_generations: 8

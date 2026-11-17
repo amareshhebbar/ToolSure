@@ -38,6 +38,7 @@ eval:
   gate_overall_drop: 0.08
   gate_overall_drop_by_model:
     sft: 0.2
+    grpo: 0.12
   gate_parse_rate: 0.90
 
 lora:
